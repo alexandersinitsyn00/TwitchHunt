@@ -1,0 +1,5 @@
+{
+    "user_name": "your_username",
+    "access_token": "your_token",
+    "channels_to_handle": ["channel1", "channel2", "channel3", "channel4"]
+}
