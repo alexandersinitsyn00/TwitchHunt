@@ -8,7 +8,7 @@ class EventManager:
     def __init__(self):
         self.tasks = deque()
 
-    # Начать обработку событийного цикла событий
+    # Начать обработку событийного цикла
     async def handle(self):
         await asyncio.gather(*self.tasks)
 
