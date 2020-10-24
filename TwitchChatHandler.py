@@ -1,6 +1,5 @@
 import re as regex
 import websockets
-import asyncio
 
 
 class TwitchChatHandler:
@@ -25,10 +24,8 @@ class TwitchChatHandler:
                     print("Network or Auth error!")
                     break
                 msg = TwitchMessage(response)
-                if msg.is_game():
-                    await self.__play_game__()
-                if msg.is_user_message():
-                    msg.print_user_message()
+                if msg.user_message:
+                    yield {'channel': msg.channel, 'user': msg.user_name, 'msg': msg.user_message}
 
     async def __auth__(self):
         await self.socket.send(f'PASS oauth:{self.token}')
@@ -65,6 +62,8 @@ class TwitchMessage:
         self.user_name = None
         self.user_message = None
         self.channel = None
+        if self.is_user_message():
+            self.__decode__()
 
     def is_user_message(self):
         return regex.search('tv\sPRIVMSG\s#\w+\s:', self.response) is not None
@@ -72,19 +71,10 @@ class TwitchMessage:
     def is_game(self):
         return regex.search('^PING', self.response) is not None
 
-    def print_user_message(self):
+    def __decode__(self):
         self.user_name = regex.search('^:(.+?)!', self.response).group(1)
         self.user_message = regex.search("^:.+?:(.*)", self.response).group(1)
         self.channel = regex.search("^:.+?#(\\w*)", self.response).group(1)
+
+    def print_user_message(self):
         print(f'{self.channel:>20} | {self.user_name:>20}: {self.user_message}')
-
-
-test = TwitchChatHandler('ddaalemann', 'toiiz4t1wkywty4g44qqwrm7vqisbx', ['ninja', 'evelone192'])
-
-
-async def run():
-    await test.handle()
-
-
-if __name__ == '__main__':
-    asyncio.run(run())
