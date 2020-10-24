@@ -1,7 +1,12 @@
 import asyncio
+
 from Twitch.TwitchChatHandler import TwitchChatHandler
 from Settings.SettingsManager import SettingsManager
-from DataBaseManager.DataBaseEngine import DataBaseEngine
+from DataBaseManager.DataBaseEngine import db
+
+from aiogram import executor
+from Telegram.misc import dp
+import Telegram.handlers
 
 # Файл с настройками
 settings = SettingsManager('C:/Users/asinitsyn/Desktop/test/Settings/private_settings.json')
@@ -10,7 +15,7 @@ settings = SettingsManager('C:/Users/asinitsyn/Desktop/test/Settings/private_set
 channels_to_handle = settings.get_channels_to_hadnle()
 
 # Инициализация БД
-db = DataBaseEngine(settings.get_database_path())
+db.setup(settings.get_database_path())
 
 # Обьект для получения сообщений с Твича
 twitch_chat = TwitchChatHandler(user_name=settings.get_user_name(),
@@ -25,4 +30,6 @@ async def run():
 
 
 if __name__ == '__main__':
-    asyncio.run(run())
+    loop = asyncio.get_event_loop()
+    loop.create_task(run())
+    executor.start_polling(dp, loop=loop)
