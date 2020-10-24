@@ -1,10 +1,10 @@
 import asyncio
-from TwitchChatHandler import TwitchChatHandler
-from SettingsManager import SettingsManager
-from DataBaseEngine import DataBaseEngine
+from Twitch.TwitchChatHandler import TwitchChatHandler
+from Settings.SettingsManager import SettingsManager
+from DataBaseManager.DataBaseEngine import DataBaseEngine
 
 # Файл с настройками
-settings = SettingsManager('C:\\Users\\asinitsyn\\Desktop\\test\\TwitchHunt\\private_settings.json')
+settings = SettingsManager('C:/Users/asinitsyn/Desktop/test/Settings/private_settings.json')
 
 # Каналы, которые которые прослушиваются по умолчанию
 channels_to_handle = settings.get_channels_to_hadnle()
