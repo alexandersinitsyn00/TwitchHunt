@@ -20,6 +20,9 @@ class SettingsManager:
     def get_channels_to_hadnle(self):
         return self.settings["channels_to_handle"]
 
+    def get_database_path(self):
+        return self.settings["database_path"]
+
     def get_settings(self):
         return self.settings
 

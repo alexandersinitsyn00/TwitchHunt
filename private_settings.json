@@ -1,5 +1,9 @@
 {
-    "user_name": "your_username",
-    "access_token": "your_token",
-    "channels_to_handle": ["channel1", "channel2", "channel3", "channel4"]
+  "user_name": "ddaalemann",
+  "access_token": "toiiz4t1wkywty4g44qqwrm7vqisbx",
+  "channels_to_handle": [
+    "guit88man",
+    "buster"
+  ],
+  "database_path": "C:\\Users\\asinitsyn\\Desktop\\test\\TwitchHunt\\db.db"
 }

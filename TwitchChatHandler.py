@@ -24,6 +24,8 @@ class TwitchChatHandler:
                     print("Network or Auth error!")
                     break
                 msg = TwitchMessage(response)
+                if msg.is_game():
+                    await self.__play_game__()
                 if msg.user_message:
                     yield {'channel': msg.channel, 'user': msg.user_name, 'msg': msg.user_message}
 
@@ -53,6 +55,7 @@ class TwitchChatHandler:
         await self.socket.send(f'PART #{channel}')
 
     async def __play_game__(self):
+        print("PING - PONG")
         await self.socket.send('PONG')
 
 
