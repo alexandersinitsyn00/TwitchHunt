@@ -6,5 +6,6 @@
     "buster",
     "gaechkatm"
   ],
-  "database_path": "C:/Users/asinitsyn/Desktop/test/Data/db.db"
+  "database_path": "C:/Users/asinitsyn/Desktop/test/Data/db.db",
+  "telegram_token": "1195418865:AAEUWthgwgQCWNxCU4zir62hrm7zc5XQmu8"
 }

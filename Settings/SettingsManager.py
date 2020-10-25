@@ -17,11 +17,14 @@ class SettingsManager:
     def get_access_token(self):
         return self.settings["access_token"]
 
-    def get_channels_to_hadnle(self):
+    def get_channels_to_handle(self):
         return self.settings["channels_to_handle"]
 
     def get_database_path(self):
         return self.settings["database_path"]
+
+    def get_telegram_token(self):
+        return self.settings["telegram_token"]
 
     def get_settings(self):
         return self.settings

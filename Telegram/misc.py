@@ -1,6 +1,7 @@
 import logging
 from aiogram import Bot, Dispatcher
+from Settings.misc import settings
 
-bot = Bot(token="1195418865:AAEUWthgwgQCWNxCU4zir62hrm7zc5XQmu8")
+bot = Bot(token=settings.get_telegram_token())
 dp = Dispatcher(bot)
 logging.basicConfig(level=logging.INFO)
