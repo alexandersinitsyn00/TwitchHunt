@@ -71,3 +71,17 @@ class DataBaseEngine:
 
     def get_all_channels(self):
         return self.cursor.execute('SELECT * FROM twitch_channel')
+
+    def update_state_for_telegram_user(self, chat_id, state: int):
+        self.cursor.execute("""UPDATE telegram_user
+                                    SET STATE = ?
+                                    WHERE chat_id = ?
+        """, (state, chat_id))
+        self.db.commit()
+
+    def get_state_for_telegram_user(self, chat_id):
+        res = self.cursor.execute("""SELECT STATE FROM telegram_user WHERE chat_id = ?
+            """, (chat_id,))
+        for row in res:
+            if row is not None:
+                return row[0]
