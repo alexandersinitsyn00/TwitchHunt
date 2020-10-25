@@ -1,6 +1,6 @@
 from aiogram import types
 from Telegram.misc import dp
-from DataBaseManager.DataBaseEngine import db
+from DataBaseManager.misc import db
 
 
 @dp.message_handler(commands=['start'])

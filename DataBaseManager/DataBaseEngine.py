@@ -67,9 +67,7 @@ class DataBaseEngine:
                                     (chat_id, first_name, last_name, user_name, language_code, STATE) 
                                VALUES (?, ?, ?, ?, ?, ?) 
                             """, (chat_id, first_name, last_name, user_name, language_code, '0'))
+        self.db.commit()
 
     def get_all_channels(self):
         return self.cursor.execute('SELECT * FROM twitch_channel')
-
-
-db = DataBaseEngine()

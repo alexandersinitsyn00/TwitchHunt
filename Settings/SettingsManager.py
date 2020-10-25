@@ -28,5 +28,5 @@ class SettingsManager:
 
 
 if __name__ == '__main__':
-    settings = SettingsManager('private_settings.json')
+    settings = SettingsManager('../Data/private_settings.json')
     print(settings.get_user_name())

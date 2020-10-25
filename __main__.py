@@ -1,26 +1,10 @@
 import asyncio
 
-from Twitch.TwitchChatHandler import TwitchChatHandler
-from Settings.SettingsManager import SettingsManager
-from DataBaseManager.DataBaseEngine import db
-
 from aiogram import executor
+from DataBaseManager.misc import db
+from Twitch.misc import twitch_chat
 from Telegram.misc import dp
 import Telegram.handlers
-
-# Файл с настройками
-settings = SettingsManager('C:/Users/asinitsyn/Desktop/test/Settings/private_settings.json')
-
-# Каналы, которые которые прослушиваются по умолчанию
-channels_to_handle = settings.get_channels_to_hadnle()
-
-# Инициализация БД
-db.setup(settings.get_database_path())
-
-# Обьект для получения сообщений с Твича
-twitch_chat = TwitchChatHandler(user_name=settings.get_user_name(),
-                                access_token=settings.get_access_token(),
-                                channels=channels_to_handle)
 
 
 # Получение сообщений и сохранение в БД
