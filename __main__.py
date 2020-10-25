@@ -17,7 +17,7 @@ async def run():
 # TEST
 async def test_coroutine():
     while True:
-        print(db.VIEW_MESSAGES_COUNT_PER_MINUTE_FOR_CHANNEL('manyrin'))
+        print(db.VIEW_MESSAGES_COUNT_PER_MINUTE_FOR_CHANNEL('buster'))
         await asyncio.sleep(10)
 
 

@@ -151,6 +151,13 @@ class DataBaseEngine:
                 return True
         return False
 
+    def get_list_of_listening_channels(self):
+        res = self.cursor.execute("""SELECT name from twitch_channel WHERE IS_LISTENING_STATE = 1""")
+        channels_list = []
+        for row in res:
+            channels_list.append(row[0])
+        return channels_list
+
     def VIEW_MESSAGES_COUNT_PER_MINUTE_FOR_CHANNEL(self, channel_name):
         query_res = self.cursor.execute("""
                     SELECT COUNT(*), tw_chat.date, SUBSTR(tw_chat.time, 1,5)
