@@ -52,8 +52,9 @@ class TwitchChatHandler:
     async def __leave__(self, channel):
         await self.socket.send(f'PART #{channel}')
 
+    # Игра с твичом в пинг-понг, чтобы сервер не закрывал соединение
     async def __play_game__(self):
-        print("PING - PONG")
+        print("TWITCH: PING - PONG")
         await self.socket.send('PONG')
 
 
@@ -76,6 +77,3 @@ class TwitchMessage:
         self.user_name = regex.search('^:(.+?)!', self.response).group(1)
         self.user_message = regex.search("^:.+?:(.*)", self.response).group(1)
         self.channel = regex.search("^:.+?#(\\w*)", self.response).group(1)
-
-    def print_user_message(self):
-        print(f'{self.channel:>20} | {self.user_name:>20}: {self.user_message}')

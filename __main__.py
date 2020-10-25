@@ -1,5 +1,4 @@
 import asyncio
-from datetime import datetime
 
 from aiogram import executor
 from DataBaseManager.misc import db
@@ -17,12 +16,15 @@ async def run():
 # TEST
 async def test_coroutine():
     while True:
-        print(db.VIEW_MESSAGES_COUNT_PER_MINUTE_FOR_CHANNEL('buster'))
+        # print(db.VIEW_MESSAGES_COUNT_PER_MINUTE_FOR_CHANNEL('buster'))
         await asyncio.sleep(10)
 
 
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
+
     loop.create_task(run())
     loop.create_task(test_coroutine())
+
+    # Запуск телеграмм бота и других задач с Event Loop
     executor.start_polling(dp, loop=loop)
