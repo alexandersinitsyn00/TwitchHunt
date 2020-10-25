@@ -22,6 +22,7 @@ class DataBaseEngine:
                                         JOIN twitch_channel channel on channel.name = ?
                                     WHERE chat.chat_id = ?
                             """, (channel_name, chat_id))
+        self.db.commit()
 
     # Удаление подписки
     def remove_subscription(self, chat_id, channel_name):
@@ -34,6 +35,7 @@ class DataBaseEngine:
                                 AND channel_id = (select ID from twitch_channel
                                                     where name = ?) 
                             """, (chat_id, channel_name))
+        self.db.commit()
 
     # Сохранение сообщения
     def save_twitch_message(self, channel: str, user: str, msg: str):
