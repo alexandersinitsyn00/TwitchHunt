@@ -16,11 +16,11 @@ class DataBaseEngine:
     # Создание подписки
     def add_subscription(self, chat_id, channel_name):
         self.__add_twitch_channel_if_not_exists__(channel_name)
-        self.cursor.execute("""INSERT INTO ref_telegram_twitch (chat_id, channel_id) 
-                                    SELECT chat.id, channel.id
-                                    FROM telegram_chat chat 
+        self.cursor.execute("""INSERT INTO ref_telegram_twitch (telegram_id, channel_id) 
+                                    SELECT telegram.id, channel.id
+                                    FROM telegram
                                         JOIN twitch_channel channel on channel.name = ?
-                                    WHERE chat.chat_id = ?
+                                    WHERE telegram.chat_id = ?
                             """, (channel_name, chat_id))
         self.db.commit()
 
@@ -30,7 +30,7 @@ class DataBaseEngine:
             raise TelegramChatHasNoSubToChannel()
         self.cursor.execute("""
                            DELETE FROM ref_telegram_twitch 
-                                WHERE chat_id = (select id from telegram_chat
+                                WHERE telegram_id = (select id from telegram
                                                     where chat_id = ?)
                                 AND channel_id = (select ID from twitch_channel
                                                     where name = ?) 
@@ -52,7 +52,7 @@ class DataBaseEngine:
 
     # Сохранение информации о пользователе Telegram
     def save_telegram_user_info(self, chat_id, first_name, last_name, user_name, language_code):
-        self.cursor.execute("""INSERT or IGNORE INTO telegram_chat 
+        self.cursor.execute("""INSERT or IGNORE INTO telegram
                                     (chat_id, first_name, last_name, user_name, language_code, STATE) 
                                VALUES (?, ?, ?, ?, ?, ?) 
                             """, (chat_id, first_name, last_name, user_name, language_code, '0'))
@@ -68,7 +68,7 @@ class DataBaseEngine:
 
     # Установка состояния для пользователя Телеграмма
     def set_state_for_telegram_user(self, chat_id, state: int):
-        self.cursor.execute("""UPDATE telegram_chat
+        self.cursor.execute("""UPDATE telegram
                                     SET STATE = ?
                                     WHERE chat_id = ?
         """, (state, chat_id))
@@ -76,7 +76,7 @@ class DataBaseEngine:
 
     # Получение состояния для пользователя телеграмм
     def get_state_for_telegram_user(self, chat_id):
-        res = self.cursor.execute("""SELECT STATE FROM telegram_chat WHERE chat_id = ?
+        res = self.cursor.execute("""SELECT STATE FROM telegram WHERE chat_id = ?
             """, (chat_id,))
         for row in res:
             if row is not None:
@@ -130,7 +130,7 @@ class DataBaseEngine:
         query_res = self.cursor.execute("""
             select ref.id 
             from ref_telegram_twitch ref
-                join telegram_chat chat on ref.chat_id = chat.id and chat.chat_id = ?
+                join telegram on ref.telegram_id = telegram.id and telegram.chat_id = ?
                 join twitch_channel channel on ref.channel_id = channel.id and channel.name = ?
         """, (chat_id, channel_name))
         for row in query_res:
@@ -169,7 +169,7 @@ class DataBaseEngine:
                        """)
 
         # Пользователь телеграмма
-        self.cursor.execute("""CREATE TABLE IF NOT EXISTS telegram_chat
+        self.cursor.execute("""CREATE TABLE IF NOT EXISTS telegram
                           ( ID INTEGER PRIMARY KEY AUTOINCREMENT,
                             chat_id INTEGER unique,
                             first_name unique,
@@ -183,10 +183,10 @@ class DataBaseEngine:
         # Связь пользователь телеграмма - канал TWITCH
         self.cursor.execute("""CREATE TABLE IF NOT EXISTS ref_telegram_twitch 
                           ( ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                            chat_id INTEGER,
+                            telegram_id INTEGER,
                             channel_id INTEGER,
                             FOREIGN KEY(channel_id) REFERENCES twitch_channel(ID),
-                            FOREIGN KEY(chat_id) REFERENCES telegram_chat(ID)
-                            UNIQUE(chat_id, channel_id)
+                            FOREIGN KEY(telegram_id) REFERENCES telegram(ID)
+                            UNIQUE(telegram_id, channel_id)
                           )
                        """)
