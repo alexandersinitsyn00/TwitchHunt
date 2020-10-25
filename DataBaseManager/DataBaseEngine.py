@@ -35,7 +35,8 @@ class DataBaseEngine:
                             channel_id INTEGER,
                             user_id INTEGER,
                             msg TEXT,
-                            unix_datetime REAL,
+                            date TEXT,
+                            time TEXT,
                             FOREIGN KEY(channel_id) REFERENCES twitch_channel(ID),
                             FOREIGN KEY(user_id) REFERENCES twitch_user(ID)
                           )
@@ -87,12 +88,13 @@ class DataBaseEngine:
     def save_twitch_message(self, channel: str, user: str, msg: str):
         self.__add_twitch_channel_if_not_exists__(channel)
         self.__add_twitch_user_if_not_exists__(user)
-        self.cursor.execute("""INSERT INTO twitch_chat (channel_id, user_id, msg, unix_datetime) 
-                                    SELECT c.id, u.id, ?, ?
+        self.cursor.execute("""INSERT INTO twitch_chat (channel_id, user_id, msg, date, time) 
+                                    SELECT c.id, u.id, ?, ?, ?
                                     FROM twitch_user u
                                         JOIN twitch_channel c on c.name = ?
                                     WHERE u.name = ?
-                           """, (msg, datetime.now().timestamp(), channel, user))
+                           """, (
+            msg, datetime.now().date(), str(datetime.now().time()), channel, user))
         self.db.commit()
 
     def save_telegram_user_info(self, chat_id, first_name, last_name, user_name, language_code):
@@ -148,3 +150,13 @@ class DataBaseEngine:
             if row is not None:
                 return True
         return False
+
+    def VIEW_MESSAGES_COUNT_PER_MINUTE_FOR_CHANNEL(self, channel_name):
+        query_res = self.cursor.execute("""
+                    SELECT COUNT(*), tw_chat.date, SUBSTR(tw_chat.time, 1,5)
+                    FROM twitch_chat tw_chat
+                        JOIN twitch_channel channel on tw_chat.channel_id = channel.id
+                    WHERE channel.name = ?
+                    GROUP by tw_chat.date, SUBSTR(tw_chat.time, 1,5)
+                    """, (channel_name,))
+        return query_res.fetchall()
