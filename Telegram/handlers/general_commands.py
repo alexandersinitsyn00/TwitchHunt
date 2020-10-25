@@ -19,5 +19,12 @@ async def cmd_start(message: types.Message):
 @dp.message_handler(commands=['sub'])
 async def cmd_start(message: types.Message):
     chat_id = message['chat']['id']
-    db.update_state_for_telegram_user(chat_id, states.SUBSCRIBING)
+    db.set_state_for_telegram_user(chat_id, states.SUBSCRIBING)
     await message.answer('Введите имя канала, на которой вы хотите подписаться: ')
+
+
+@dp.message_handler(commands=['unsub'])
+async def cmd_start(message: types.Message):
+    chat_id = message['chat']['id']
+    db.set_state_for_telegram_user(chat_id, states.UNSUBSCRIBING)
+    await message.answer('Введите имя канала, от которого вы хотите отписаться')

@@ -47,11 +47,9 @@ class TwitchChatHandler:
 
     async def __join__(self, channel):
         await self.socket.send(f'JOIN #{channel}')
-        print(f"JOINED TO: {channel}")
         self.channel_names_to_listen[channel] = True
 
     async def __leave__(self, channel):
-        print(f'LEAVED: {channel}')
         await self.socket.send(f'PART #{channel}')
 
     async def __play_game__(self):
