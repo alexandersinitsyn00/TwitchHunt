@@ -1,5 +1,6 @@
 import sqlite3
 from datetime import datetime
+from DataBaseManager.Exceptions import TelegramChatHasNoSubToChannel
 
 
 class DataBaseEngine:
@@ -73,6 +74,8 @@ class DataBaseEngine:
                             """, (channel_name, chat_id))
 
     def remove_subscription(self, chat_id, channel_name):
+        if not self.__is__telegram_chat_has_sub_to_channel(chat_id, channel_name):
+            raise TelegramChatHasNoSubToChannel()
         self.cursor.execute("""
                            DELETE FROM ref_telegram_twitch 
                                 WHERE chat_id = (select id from telegram_chat
@@ -121,6 +124,18 @@ class DataBaseEngine:
     def __add_twitch_user_if_not_exists__(self, user_name):
         self.cursor.execute('INSERT or IGNORE INTO twitch_user (name) VALUES (?)', (user_name,))
         self.db.commit()
+
+    def __is__telegram_chat_has_sub_to_channel(self, chat_id, channel_name):
+        query_res = self.cursor.execute("""
+            select ref.id 
+            from ref_telegram_twitch ref
+                join telegram_chat chat on ref.chat_id = chat.id and chat.chat_id = ?
+                join twitch_channel channel on ref.channel_id = channel.id and channel.name = ?
+        """, (chat_id, channel_name))
+        for row in query_res:
+            if row is not None:
+                return True
+        return False
 
     def is_channel_has_subscriptions(self, channel_name):
         query_res = self.cursor.execute("""

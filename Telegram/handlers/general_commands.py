@@ -1,6 +1,7 @@
 from aiogram import types
 from Telegram.misc import dp
 from DataBaseManager.misc import db
+
 from Telegram import states
 
 
@@ -28,3 +29,9 @@ async def cmd_start(message: types.Message):
     chat_id = message['chat']['id']
     db.set_state_for_telegram_user(chat_id, states.UNSUBSCRIBING)
     await message.answer('Введите имя канала, от которого вы хотите отписаться')
+
+
+@dp.message_handler(commands=['mysubs'])
+async def cmd_start(message: types.Message):
+    chat_id = message['chat']['id']
+    await message.answer('Список ваших подписок: ')
