@@ -1,6 +1,7 @@
 from aiogram import types
 from Telegram.misc import dp
 from DataBaseManager.misc import db
+from Telegram import states
 
 
 @dp.message_handler(commands=['start'])
@@ -18,5 +19,5 @@ async def cmd_start(message: types.Message):
 @dp.message_handler(commands=['sub'])
 async def cmd_start(message: types.Message):
     chat_id = message['chat']['id']
-    db.update_state_for_telegram_user(chat_id, 1)
+    db.update_state_for_telegram_user(chat_id, states.SUBSCRIBING)
     await message.answer('Введите имя канала, на которой вы хотите подписаться: ')

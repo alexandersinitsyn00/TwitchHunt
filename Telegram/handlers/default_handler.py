@@ -13,4 +13,4 @@ async def echo(message: types.Message):
         await message.answer('Пожалуйста, выберите команду')
     elif state == states.SUBSCRIBING:
         await message.answer('Вы ввели имя канала, на который хотите подписаться')
-        db.update_state_for_telegram_user(chat_id, 0)
+        db.update_state_for_telegram_user(chat_id, states.DOING_NOTHING)
