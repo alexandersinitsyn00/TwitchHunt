@@ -114,6 +114,17 @@ class DataBaseEngine:
                     """, (channel_name,))
         return query_res.fetchall()
 
+    # Получение количества зрителей для канала поминутно
+    def VIEW_VIEWERS_COUNT_PER_MINUTE_FOR_CHANNEL(self, channel_name):
+        query_res = self.cursor.execute("""
+                    SELECT MAX(viewers), date, SUBSTR(time, 1,5)
+                    FROM twitch_streams_info
+                        JOIN twitch_channel channel on twitch_streams_info.channel_id = channel.id
+                    WHERE channel.name = ?
+                    GROUP by date, SUBSTR(time, 1,5)
+                    """, (channel_name,))
+        return query_res.fetchall()
+
     # Добавить канал в базу, если его не существует
     def __add_twitch_channel_if_not_exists__(self, channel_name):
         self.cursor.execute('INSERT or IGNORE INTO twitch_channel (name, IS_LISTENING_STATE) VALUES (?, 1)',
