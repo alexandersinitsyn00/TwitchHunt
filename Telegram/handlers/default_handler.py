@@ -4,6 +4,9 @@ from DataBaseManager.misc import db
 from Telegram import states
 from Twitch.misc import twitch_chat
 from DataBaseManager.Exceptions import TelegramChatHasNoSubToChannel
+import Twitch.TwitchDataParser as td
+from Telegram.Exceptions import TwitchChannelNotValid
+
 import sqlite3
 
 
@@ -25,6 +28,9 @@ async def subscribing(chat_id, message):
     try:
         channel_name = message.text.lower()
 
+        if not await td.is_valid_channel(channel_name):
+            raise TwitchChannelNotValid
+
         # Создать подписку
         db.add_subscription(chat_id, channel_name)
 
@@ -36,8 +42,13 @@ async def subscribing(chat_id, message):
 
         # Установить состояние канала - прослушивание
         db.set_state_for_twitch_channel(channel_name, 1)
+
     except sqlite3.IntegrityError:
-        await message.answer('Вы уже подписаны на этот канал')
+        await message.reply('Вы уже подписаны на этот канал')
+
+    except TwitchChannelNotValid:
+        await message.reply('Канал с таким именем не найден, проверьте введенные данные')
+
     db.set_state_for_telegram_user(chat_id, states.DOING_NOTHING)
 
 
@@ -56,5 +67,5 @@ async def unsubscribing(chat_id, message):
             await twitch_chat.remove_channel(channel_name)
             db.set_state_for_twitch_channel(channel_name, 0)
     except TelegramChatHasNoSubToChannel:
-        await message.answer('Вы не были подписаны на этот канал')
+        await message.reply('Вы не были подписаны на этот канал')
     db.set_state_for_telegram_user(chat_id, states.DOING_NOTHING)
