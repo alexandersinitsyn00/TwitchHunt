@@ -125,6 +125,16 @@ class DataBaseEngine:
         self.cursor.execute('INSERT or IGNORE INTO twitch_user (name) VALUES (?)', (user_name,))
         self.db.commit()
 
+    # Добавить информацию о стриме
+    def save_stream_info(self, channel_name, game_id, language, title, viewers):
+        self.cursor.execute("""INSERT  INTO twitch_streams_info (game_id, language, title, viewers, channel_id)
+                                    SELECT ?, ?, ?, ? , name
+                                    FROM twitch_channel
+                                    WHERE name = ? 
+                            """,
+                            (game_id, language, title, viewers, channel_name))
+        self.db.commit()
+
     # Проверка, имеет ли пользователь телеграмма подписку на канал
     def __is__telegram_chat_has_sub_to_channel(self, chat_id, channel_name):
         query_res = self.cursor.execute("""
