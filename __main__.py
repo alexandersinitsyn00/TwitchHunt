@@ -23,7 +23,7 @@ async def save_stream_info():
             if stream_info is not None:
                 db.save_stream_info(channel, stream_info['game_id'], stream_info['language'],
                                     stream_info['title'], stream_info['viewer_count'])
-        await asyncio.sleep(60)
+        await asyncio.sleep(1)
 
 
 async def test_coroutine():

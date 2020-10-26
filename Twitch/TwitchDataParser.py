@@ -28,6 +28,8 @@ async def get_stream_info_for_channel_if_streaming(channel_name):
                 info = data["data"][0]
             except IndexError:
                 return None
+            except KeyError:
+                return None
             return {'game_id': info["game_id"],
                     'language': info["language"],
                     'title': info["title"],
