@@ -17,7 +17,7 @@ async def is_valid_auth_token(token):
             return resp.status == 200
 
 
-async def get_stream_info_for_channel(channel_name):
+async def get_stream_info_for_channel_if_streaming(channel_name):
     headers = {'Authorization': f'Bearer {TOKEN}',
                'Client-Id': f'{CLIENT_ID}'}
     params = {'user_login': channel_name}
@@ -36,8 +36,8 @@ async def get_stream_info_for_channel(channel_name):
 
 async def caller():
     print(await is_valid_auth_token('fmw74lryx24be48sjcjvwwtlgsn8ke'))
-    print(await get_stream_info_for_channel('roflo_chelik'))
-    print(await get_stream_info_for_channel('bratishkinoff'))
+    print(await get_stream_info_for_channel_if_streaming('roflo_chelik'))
+    print(await get_stream_info_for_channel_if_streaming('bratishkinoff'))
 
 
 if __name__ == '__main__':

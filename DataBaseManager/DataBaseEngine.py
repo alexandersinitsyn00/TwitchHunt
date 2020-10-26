@@ -148,6 +148,18 @@ class DataBaseEngine:
                           )
                        """)
 
+        # Информация о стримах канала
+        self.cursor.execute("""CREATE TABLE IF NOT EXISTS twitch_streams_info
+                           ( ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                              game_id INTEGER,
+                              language,
+                              title,
+                              viewers,
+                              channel_id INTEGER,
+                              FOREIGN KEY(channel_id) REFERENCES twitch_channel(ID)
+                           )
+                        """)
+
         # Пользователь твича
         self.cursor.execute("""CREATE TABLE IF NOT EXISTS twitch_user 
                           ( ID INTEGER PRIMARY KEY AUTOINCREMENT,
