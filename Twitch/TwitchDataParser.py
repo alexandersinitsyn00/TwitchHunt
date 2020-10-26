@@ -24,8 +24,9 @@ async def get_stream_info_for_channel_if_streaming(channel_name):
     async with aiohttp.ClientSession() as session:
         async with session.request('GET', STREAM_BASE_URL, params=params, headers=headers) as resp:
             data = await resp.json()
-            info = data["data"][0]
-            if not info:
+            try:
+                info = data["data"][0]
+            except IndexError:
                 return None
             return {'game_id': info["game_id"],
                     'language': info["language"],

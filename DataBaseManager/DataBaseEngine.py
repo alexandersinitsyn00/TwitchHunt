@@ -127,15 +127,18 @@ class DataBaseEngine:
 
     # Добавить информацию о стриме
     def save_stream_info(self, channel_name, game_id, language, title, viewers):
-        self.cursor.execute("""INSERT  INTO twitch_streams_info (game_id, language, title, viewers, channel_id)
-                                    SELECT ?, ?, ?, ? , name
+        self.cursor.execute("""INSERT  INTO twitch_streams_info (game_id, language, title, 
+                                                                viewers,  date, time, channel_id)
+                                    SELECT ?, ?, ?, ? , ?, ?, id
                                     FROM twitch_channel
                                     WHERE name = ? 
                             """,
-                            (game_id, language, title, viewers, channel_name))
+                            (game_id, language, title, viewers, datetime.now().date(), str(datetime.now().time()),
+                             channel_name))
         self.db.commit()
 
-    # Проверка, имеет ли пользователь телеграмма подписку на канал
+        # Проверка, имеет ли пользователь телеграмма подписку на канал
+
     def __is__telegram_chat_has_sub_to_channel(self, chat_id, channel_name):
         query_res = self.cursor.execute("""
             select ref.id 
@@ -166,6 +169,8 @@ class DataBaseEngine:
                               title,
                               viewers,
                               channel_id INTEGER,
+                              date TEXT,
+                              time TEXT,
                               FOREIGN KEY(channel_id) REFERENCES twitch_channel(ID)
                            )
                         """)
