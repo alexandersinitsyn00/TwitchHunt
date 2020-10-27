@@ -26,7 +26,7 @@ class DataBaseEngine:
 
     # Удаление подписки
     def remove_subscription(self, chat_id, channel_name):
-        if not self.__is__telegram_chat_has_sub_to_channel(chat_id, channel_name):
+        if not self.is_telegram_chat_has_sub_to_channel(chat_id, channel_name):
             raise TelegramChatHasNoSubToChannel()
         self.cursor.execute("""
                            DELETE FROM ref_telegram_twitch 
@@ -150,7 +150,7 @@ class DataBaseEngine:
 
         # Проверка, имеет ли пользователь телеграмма подписку на канал
 
-    def __is__telegram_chat_has_sub_to_channel(self, chat_id, channel_name):
+    def is_telegram_chat_has_sub_to_channel(self, chat_id, channel_name):
         query_res = self.cursor.execute("""
             select ref.id 
             from ref_telegram_twitch ref

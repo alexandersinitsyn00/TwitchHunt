@@ -6,6 +6,7 @@ from Twitch.misc import twitch_chat
 from DataBaseManager.Exceptions import TelegramChatHasNoSubToChannel
 import Twitch.TwitchDataParser as td
 from Telegram.Exceptions import TwitchChannelNotValid
+from GraphBuilder.GraphBuilder import graph
 
 import sqlite3
 
@@ -22,6 +23,8 @@ async def echo(message: types.Message):
         await subscribing(chat_id, message)
     elif state == states.UNSUBSCRIBING:
         await unsubscribing(chat_id, message)
+    elif state == states.WANTING_GRAPH:
+        await give_graph(chat_id, message)
 
 
 async def subscribing(chat_id, message):
@@ -68,4 +71,17 @@ async def unsubscribing(chat_id, message):
             db.set_state_for_twitch_channel(channel_name, 0)
     except TelegramChatHasNoSubToChannel:
         await message.reply('Вы не были подписаны на этот канал')
+    db.set_state_for_telegram_user(chat_id, states.DOING_NOTHING)
+
+
+async def give_graph(chat_id, message):
+    channel_name = message.text.lower()
+    if db.is_telegram_chat_has_sub_to_channel(chat_id, channel_name):
+        data = db.VIEW_MESSAGES_COUNT_PER_MINUTE_FOR_CHANNEL(channel_name)
+        graph_name = 'Анализ количества сообщений'
+        graph(graph_name, 'Количество сообщений', channel_name, data)
+        await message.answer_photo(types.InputFile(f'C:/Users/asinitsyn/Desktop/test/Data/{channel_name}.jpg'),
+                                   f'{graph_name} для канала {channel_name}')
+    else:
+        await message.reply('Вы не были подписаны на этот канал!')
     db.set_state_for_telegram_user(chat_id, states.DOING_NOTHING)

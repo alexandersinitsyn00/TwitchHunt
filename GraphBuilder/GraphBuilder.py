@@ -41,7 +41,7 @@ def graph(graph_name, ylabel, streamer, data):
 
     plt.grid(True)
     plt.title(graph_name)
-    plt.xlabel('ДеньМесяца ЧЧ:ММ')
+    plt.xlabel('Дата (время)')
     plt.ylabel(ylabel)
     plt.plot_date(dates, x, 'go-', linewidth=2, markersize=1, label=streamer)
     plt.legend()

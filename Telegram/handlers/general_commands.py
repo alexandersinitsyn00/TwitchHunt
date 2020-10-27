@@ -31,6 +31,13 @@ async def cmd_start(message: types.Message):
     await message.answer('Введите имя канала, от которого вы хотите отписаться')
 
 
+@dp.message_handler(commands=['msg_qty'])
+async def cmd_start(message: types.Message):
+    chat_id = message['chat']['id']
+    db.set_state_for_telegram_user(chat_id, states.WANTING_GRAPH)
+    await message.answer('Введите имя канала, для которого вы хотите получить график с количеством сообщений: ')
+
+
 @dp.message_handler(commands=['mysubs'])
 async def cmd_start(message: types.Message):
     chat_id = message['chat']['id']
