@@ -1,12 +1,10 @@
 import asyncio
-
 from aiogram import executor
 from DataBaseManager.misc import db
 from Twitch.misc import twitch_chat
 from Telegram.misc import dp
 import Telegram.handlers
 import Twitch.TwitchDataParser as td
-from GraphBuilder.GraphBuilder import graph
 
 
 # Получение сообщений и сохранение в БД
@@ -33,10 +31,9 @@ async def test_coroutine():
 
 
 if __name__ == '__main__':
-    # data = db.VIEW_VIEWERS_COUNT_PER_MINUTE_FOR_CHANNEL(channel_name)
-# loop = asyncio.get_event_loop()
-# loop.create_task(save_twitch_messages())
-# loop.create_task(save_stream_info())
-#
-# # Запуск телеграмм бота и других задач с Event Loop
-# executor.start_polling(dp, loop=loop)
+    loop = asyncio.get_event_loop()
+    loop.create_task(save_twitch_messages())
+    loop.create_task(save_stream_info())
+
+    # Запуск телеграмм бота и других задач с Event Loop
+    executor.start_polling(dp, loop=loop)
