@@ -4,3 +4,4 @@ __pycache__
 *.json
 *.jpg
 venv/
+*.db.db-journal

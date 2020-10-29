@@ -48,7 +48,6 @@ class DataBaseEngine:
                                     WHERE u.name = ?
                            """, (
             msg, datetime.now().date(), str(datetime.now().time()), channel, user))
-        self.db.commit()
 
     # Сохранение информации о пользователе Telegram
     def save_telegram_user_info(self, chat_id, first_name, last_name, user_name, language_code):
@@ -56,7 +55,6 @@ class DataBaseEngine:
                                     (chat_id, first_name, last_name, user_name, language_code, STATE) 
                                VALUES (?, ?, ?, ?, ?, ?) 
                             """, (chat_id, first_name, last_name, user_name, language_code, '0'))
-        self.db.commit()
 
     # Установка состояния для канала Твича
     def set_state_for_twitch_channel(self, channel_name, state):
@@ -132,7 +130,6 @@ class DataBaseEngine:
     # Добавить пользователя в базу, если его еще не существует
     def __add_twitch_user_if_not_exists__(self, user_name):
         self.cursor.execute('INSERT or IGNORE INTO twitch_user (name) VALUES (?)', (user_name,))
-        self.db.commit()
 
     # Добавить информацию о стриме
     def save_stream_info(self, channel_name, game_id, language, title, viewers):
@@ -144,10 +141,8 @@ class DataBaseEngine:
                             """,
                             (game_id, language, title, viewers, datetime.now().date(), str(datetime.now().time()),
                              channel_name))
-        self.db.commit()
 
-        # Проверка, имеет ли пользователь телеграмма подписку на канал
-
+    # Проверка, имеет ли пользователь телеграмма подписку на канал
     def is_telegram_chat_has_sub_to_channel(self, chat_id, channel_name):
         query_res = self.cursor.execute("""
             select ref.id 
@@ -226,3 +221,4 @@ class DataBaseEngine:
                             UNIQUE(telegram_id, channel_id)
                           )
                        """)
+        self.db.commit()
