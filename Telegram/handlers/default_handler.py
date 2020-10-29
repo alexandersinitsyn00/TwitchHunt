@@ -80,7 +80,7 @@ async def give_graph(chat_id, message):
         data = db.VIEW_MESSAGES_COUNT_PER_MINUTE_FOR_CHANNEL(channel_name)
         graph_name = 'Анализ количества сообщений'
         graph(graph_name, 'Количество сообщений', channel_name, data)
-        await message.answer_photo(types.InputFile(f'C:/Users/asinitsyn/Desktop/test/Data/{channel_name}.jpg'),
+        await message.answer_photo(types.InputFile(f'./Data/{channel_name}.jpg'),
                                    f'{graph_name} для канала {channel_name}')
     else:
         await message.reply('Вы не были подписаны на этот канал!')
