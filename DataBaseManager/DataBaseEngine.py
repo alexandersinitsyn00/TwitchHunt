@@ -105,25 +105,23 @@ class DataBaseEngine:
 
     # Получение количества сообщений для канала поминутно
     def VIEW_MESSAGES_COUNT_PER_MINUTE_FOR_CHANNEL(self, channel_name):
-        query_res = self.cursor.execute("""
+        return self.cursor.execute("""
                     SELECT COUNT(*), tw_chat.date, SUBSTR(tw_chat.time, 1,5)
                     FROM twitch_chat tw_chat
                         JOIN twitch_channel channel on tw_chat.channel_id = channel.id
                     WHERE channel.name = ?
                     GROUP by tw_chat.date, SUBSTR(tw_chat.time, 1,5)
                     """, (channel_name,))
-        return query_res.fetchall()
 
     # Получение количества зрителей для канала поминутно
     def VIEW_VIEWERS_COUNT_PER_MINUTE_FOR_CHANNEL(self, channel_name):
-        query_res = self.cursor.execute("""
+        return self.cursor.execute("""
                     SELECT MAX(viewers), date, SUBSTR(time, 1,5)
                     FROM twitch_streams_info
                         JOIN twitch_channel channel on twitch_streams_info.channel_id = channel.id
                     WHERE channel.name = ?
                     GROUP by date, SUBSTR(time, 1,5)
                     """, (channel_name,))
-        return query_res.fetchall()
 
     # Добавить канал в базу, если его не существует
     def __add_twitch_channel_if_not_exists__(self, channel_name):

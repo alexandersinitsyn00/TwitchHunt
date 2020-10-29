@@ -6,4 +6,4 @@ db = DataBaseEngine()
 db.setup(settings.get_database_path())
 
 if __name__ == '__main__':
-    print(db.VIEW_VIEWERS_COUNT_PER_MINUTE_FOR_CHANNEL('nickmercs'))
+    print(db.VIEW_VIEWERS_COUNT_PER_MINUTE_FOR_CHANNEL('buster'))
