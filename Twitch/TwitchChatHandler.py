@@ -21,9 +21,9 @@ class TwitchChatHandler:
                 try:
                     response = await self.socket.recv()
                 except websockets.ConnectionClosedError:
+                    print('TWITCH: RECONNECTING')
                     await self.socket.connect(self.url_chat)
                     await self.__auth__()
-                    break
                 msg = TwitchMessage(response)
                 if msg.is_game():
                     await self.__play_game__()

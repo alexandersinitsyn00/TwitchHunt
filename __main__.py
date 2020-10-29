@@ -23,6 +23,7 @@ async def save_stream_info():
                 db.save_stream_info(channel, stream_info['game_id'], stream_info['language'],
                                     stream_info['title'], stream_info['viewer_count'])
         await asyncio.sleep(60)
+        db.db.commit()
 
 
 async def test_coroutine():
