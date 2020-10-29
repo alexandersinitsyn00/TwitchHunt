@@ -2,7 +2,7 @@ import json
 
 
 class SettingsManager:
-    def __init__(self, file_path='private_settings.json'):
+    def __init__(self, file_path='./Data/private_settings.json'):
         self.file_path = file_path
         self.settings = {}
         self.read_settings()
@@ -31,5 +31,5 @@ class SettingsManager:
 
 
 if __name__ == '__main__':
-    settings = SettingsManager('../Data/private_settings.json')
+    settings = SettingsManager('./Data/private_settings.json')
     print(settings.get_user_name())

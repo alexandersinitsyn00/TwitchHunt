@@ -79,7 +79,7 @@ async def give_datetime_graph(chat_id, message):
     if db.is_telegram_chat_has_sub_to_channel(chat_id, channel_name):
         data = db.VIEW_MESSAGES_COUNT_PER_MINUTE_FOR_CHANNEL(channel_name)
         graph_name = 'Анализ количества сообщений'
-
+        datetime_graph(graph_name, 'Количество сообщений', channel_name, data)
         await message.answer_photo(types.InputFile(f'C:/Users/Warzik/Desktop/Test/TwitchHunt/Data/{channel_name}.jpg'),
                                    f'{graph_name} для канала {channel_name}')
     else:

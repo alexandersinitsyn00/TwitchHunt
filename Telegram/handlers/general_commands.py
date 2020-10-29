@@ -56,10 +56,15 @@ async def cmd_start(message: types.Message):
 
     graph_data = {}
     graph_name = 'Анализ количества сообщений'
+    count = 0
     for row in channels:
+        count = count + 1
         channel_name = row[0]
         graph_data[channel_name] = db.VIEW_MESSAGES_COUNT_PER_MINUTE_FOR_CHANNEL(channel_name)
 
-    multiply_datetime_graph(graph_name,'Количество сообщений',chat_id, graph_data)
-    await message.answer_photo(types.InputFile(f'C:/Users/Warzik/Desktop/Test/TwitchHunt/Data/{chat_id}.jpg'),
-                               f'{graph_name} для канала {channel_name}')
+    if count > 0:
+        multiply_datetime_graph(graph_name, 'Количество сообщений', chat_id, graph_data)
+        await message.answer_photo(types.InputFile(f'C:/Users/Warzik/Desktop/Test/TwitchHunt/Data/{chat_id}.jpg'),
+                               f'{graph_name} для всех подписок')
+    else:
+        message.answer("Вы не подписаны ни ни один канал")
