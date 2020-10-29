@@ -31,7 +31,7 @@ def datetime_graph(graph_name, ylabel, streamer, data):
     save(streamer, fmt='jpg')
 
 
-def multiply_datetime_graph(graph_name, ylabel, streamer, data):
+def multiply_datetime_graph(graph_name, ylabel, file_name, data):
     fig = plt.figure(frameon=False)
     fig.set_size_inches(16, 9)
 
@@ -49,4 +49,4 @@ def multiply_datetime_graph(graph_name, ylabel, streamer, data):
         plt.plot_date(y, x, linestyle='-', c=np.random.random(3), linewidth=3, markersize=2, label=key)
         plt.legend()
 
-    save(streamer, fmt='jpg')
+    save(file_name, fmt='jpg')

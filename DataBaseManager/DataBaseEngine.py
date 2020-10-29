@@ -101,6 +101,15 @@ class DataBaseEngine:
             channels_list.append(row[0])
         return channels_list
 
+    # Получение списка каналов Twitch, на которые подписан пользователь телеграмм
+    def get_list_of_channels_per_telegram_chat(self, chat_id):
+        res = self.cursor.execute("""SELECT c.name from ref_telegram_twitch ref
+                                        JOIN twitch_channel c on ref.channel_id = c.id
+                                        JOIN telegram t on ref.telegram_id = t.ID
+                                     WHERE t.chat_id = ? 
+                                     """, (chat_id,))
+        return res.fetchall()
+
     # Получение количества сообщений для канала поминутно
     def VIEW_MESSAGES_COUNT_PER_MINUTE_FOR_CHANNEL(self, channel_name):
         return self.cursor.execute("""

@@ -1,6 +1,7 @@
 from aiogram import types
 from Telegram.misc import dp
 from DataBaseManager.misc import db
+from GraphBuilder.GraphBuilder import multiply_datetime_graph
 
 from Telegram import states
 
@@ -41,4 +42,24 @@ async def cmd_start(message: types.Message):
 @dp.message_handler(commands=['mysubs'])
 async def cmd_start(message: types.Message):
     chat_id = message['chat']['id']
-    await message.answer('Список ваших подписок: ')
+    channels = db.get_list_of_channels_per_telegram_chat(chat_id)
+    msg = ''
+    for row in channels:
+        msg = f'{msg}\n{row[0]}'
+    await message.answer(f'Список ваших подписок: {msg}')
+
+
+@dp.message_handler(commands=['all_msg_qty'])
+async def cmd_start(message: types.Message):
+    chat_id = message['chat']['id']
+    channels = db.get_list_of_channels_per_telegram_chat(chat_id)
+
+    graph_data = {}
+    graph_name = 'Анализ количества сообщений'
+    for row in channels:
+        channel_name = row[0]
+        graph_data[channel_name] = db.VIEW_MESSAGES_COUNT_PER_MINUTE_FOR_CHANNEL(channel_name)
+
+    multiply_datetime_graph(graph_name,'Количество сообщений',chat_id, graph_data)
+    await message.answer_photo(types.InputFile(f'C:/Users/Warzik/Desktop/Test/TwitchHunt/Data/{chat_id}.jpg'),
+                               f'{graph_name} для канала {channel_name}')
