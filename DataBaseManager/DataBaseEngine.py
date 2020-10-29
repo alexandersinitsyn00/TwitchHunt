@@ -109,7 +109,7 @@ class DataBaseEngine:
                         JOIN twitch_channel channel on tw_chat.channel_id = channel.id
                     WHERE channel.name = ?
                     GROUP by tw_chat.date, SUBSTR(tw_chat.time, 1,5)
-                    """, (channel_name,))
+                    """, (channel_name,)).fetchall()
 
     # Получение количества зрителей для канала поминутно
     def VIEW_VIEWERS_COUNT_PER_MINUTE_FOR_CHANNEL(self, channel_name):
@@ -119,7 +119,7 @@ class DataBaseEngine:
                         JOIN twitch_channel channel on twitch_streams_info.channel_id = channel.id
                     WHERE channel.name = ?
                     GROUP by date, SUBSTR(time, 1,5)
-                    """, (channel_name,))
+                    """, (channel_name,)).fetchall()
 
     # Добавить канал в базу, если его не существует
     def __add_twitch_channel_if_not_exists__(self, channel_name):
