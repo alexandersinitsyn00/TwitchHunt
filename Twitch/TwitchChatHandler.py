@@ -47,16 +47,28 @@ class TwitchChatHandler:
         await self.__leave__(channel_name)
 
     async def __join__(self, channel):
-        await self.socket.send(f'JOIN #{channel}')
+        try:
+            await self.socket.send(f'JOIN #{channel}')
+        except websockets.ConnectionClosedError:
+            print('TWITCH: RECONNECTING')
+            await self.socket.connect(self.url_chat)
         self.channel_names_to_listen[channel] = True
 
     async def __leave__(self, channel):
-        await self.socket.send(f'PART #{channel}')
+        try:
+            await self.socket.send(f'PART #{channel}')
+        except websockets.ConnectionClosedError:
+            print('TWITCH: RECONNECTING')
+            await self.socket.connect(self.url_chat)
 
     # Игра с твичом в пинг-понг, чтобы сервер не закрывал соединение
     async def __play_game__(self):
+        try:
+            await self.socket.send('PONG')
+        except websockets.ConnectionClosedError:
+            print('TWITCH: RECONNECTING')
+            await self.socket.connect(self.url_chat)
         print("TWITCH: PING - PONG")
-        await self.socket.send('PONG')
 
 
 class TwitchMessage:

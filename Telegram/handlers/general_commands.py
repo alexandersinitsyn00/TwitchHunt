@@ -67,4 +67,4 @@ async def cmd_start(message: types.Message):
         await message.answer_photo(types.InputFile(f'C:/Users/Warzik/Desktop/Test/TwitchHunt/Data/{chat_id}.jpg'),
                                f'{graph_name} для всех подписок')
     else:
-        message.answer("Вы не подписаны ни ни один канал")
+        await message.answer("Вы не подписаны ни ни один канал")
