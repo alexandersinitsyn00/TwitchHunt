@@ -5,7 +5,7 @@ from datetime import datetime
 
 
 def save(name='', fmt='png'):
-    i_path = 'C:/Users/asinitsyn/Desktop/test/Data'.format(fmt)
+    i_path = './Data'.format(fmt)
     if not os.path.exists(i_path):
         os.mkdir(i_path)
     os.chdir(i_path)
