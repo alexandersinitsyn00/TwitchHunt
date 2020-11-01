@@ -1,70 +1,84 @@
 from aiogram import types
-from Telegram.misc import dp
-from DataBaseManager.misc import db
-from GraphBuilder.GraphBuilder import multiply_datetime_graph
+from aiogram.utils.markdown import text, bold
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ParseMode
 
-from Telegram import states
+from DataBase import *
+
+from ..telegram import dp
+from ..keyboards_stickers import *
+
+from .. import states
 
 
+# START COMMAND
 @dp.message_handler(commands=['start'])
-async def cmd_start(message: types.Message):
-    chat = message['chat']
-    user_from = message['from']
-    db.save_telegram_user_info(chat['id'],
-                               user_from['first_name'],
-                               user_from['last_name'],
-                               user_from['username'],
-                               user_from['language_code'])
-    await message.answer("Привет! Это бот для анализа Twitch!")
+async def process_start_command(message: types.Message):
+    chat_id = message.chat.id
+    user = message.from_user
+
+    db.add_tg_chat(chat_id, user.first_name, user.last_name,
+                   user.username, user.language_code)
+
+    await message.answer_sticker(HELLO_DOG_STICKER)
+    await message.answer("""Привет! Это бот для аналитики каналов Twitch! 😇
+        Чтобы получить подробный список возможностей
+        вы можете воспользоваться командой /help
+        или нажать кнопку на клавиатуре
+    """, reply_markup=start_keyboard)
 
 
+# HELP COMMAND
+@dp.message_handler(commands=['help'])
+@dp.message_handler(text=show_info_button.text)
+async def process_start_command(message: types.Message):
+    await message.answer_sticker(HMM_DOG_STICKER)
+    await message.answer("""Бот позволяет следить за каналами TWITCH
+    Для начала необходимо подписаться на канал. /sub        
+        Нужно будет ввести имя канала, на который вы хотите подписаться
+    После создания подписки начинается отслеживание чата, количества зрителей и другой информации
+    Так же при желании от канала можно отписаться. /unsub        
+
+    Для получения информации о канале необоходимо открыть список подписок /mysubs и выбрать канал, тип получаемых данных
+
+    """, reply_markup=start_keyboard)
+
+
+# SUBSCRIBE COMMAND
 @dp.message_handler(commands=['sub'])
-async def cmd_start(message: types.Message):
-    chat_id = message['chat']['id']
-    db.set_state_for_telegram_user(chat_id, states.SUBSCRIBING)
-    await message.answer('Введите имя канала, на которой вы хотите подписаться: ')
+@dp.message_handler(text=subscribe_button.text)
+async def process_subscribe_command(message: types.Message):
+    db.set_state_for_tg_chat(message.chat.id, states.SUBSCRIBING)
+
+    resp_text = text('Пожалуйста, введите',
+                     bold('имя канала'),
+                     'на который вы хотите подписаться'
+                     )
+    await message.answer(resp_text, parse_mode=ParseMode.MARKDOWN)
 
 
+# UNSUBSCRIBE COMMAND
 @dp.message_handler(commands=['unsub'])
-async def cmd_start(message: types.Message):
-    chat_id = message['chat']['id']
-    db.set_state_for_telegram_user(chat_id, states.UNSUBSCRIBING)
-    await message.answer('Введите имя канала, от которого вы хотите отписаться')
+@dp.message_handler(text=unsubscribe_button.text)
+async def process_unsubscribe_command(message: types.Message):
+    db.set_state_for_tg_chat(message.chat.id, states.UNSUBSCRIBING)
+    resp_text = text('Пожалуйста, введите',
+                     bold('имя канала'),
+                     'от которого вы хотите отписаться'
+                     )
+    await message.answer(resp_text, parse_mode=ParseMode.MARKDOWN)
 
 
-@dp.message_handler(commands=['msg_qty'])
-async def cmd_start(message: types.Message):
-    chat_id = message['chat']['id']
-    db.set_state_for_telegram_user(chat_id, states.WANTING_GRAPH)
-    await message.answer('Введите имя канала, для которого вы хотите получить график с количеством сообщений: ')
-
-
+# MYSUB COMMAND
 @dp.message_handler(commands=['mysubs'])
-async def cmd_start(message: types.Message):
-    chat_id = message['chat']['id']
-    channels = db.get_list_of_channels_per_telegram_chat(chat_id)
-    msg = ''
-    for row in channels:
-        msg = f'{msg}\n{row[0]}'
-    await message.answer(f'Список ваших подписок: {msg}')
+@dp.message_handler(text=my_subs_button.text)
+async def process_mysub_list_command(message: types.Message):
+    channels = ['channel1', 'channel2']
+    if not channels:
+        await message.answer('Вы не были подписаны ни на один канал')
+        return
 
-
-@dp.message_handler(commands=['all_msg_qty'])
-async def cmd_start(message: types.Message):
-    chat_id = message['chat']['id']
-    channels = db.get_list_of_channels_per_telegram_chat(chat_id)
-
-    graph_data = {}
-    graph_name = 'Анализ количества сообщений'
-    count = 0
-    for row in channels:
-        count = count + 1
-        channel_name = row[0]
-        graph_data[channel_name] = db.VIEW_MESSAGES_COUNT_PER_MINUTE_FOR_CHANNEL(channel_name)
-
-    if count > 0:
-        multiply_datetime_graph(graph_name, 'Количество сообщений', chat_id, graph_data)
-        await message.answer_photo(types.InputFile(f'C:/Users/Warzik/Desktop/Test/TwitchHunt/Data/{chat_id}.jpg'),
-                               f'{graph_name} для всех подписок')
-    else:
-        await message.answer("Вы не подписаны ни ни один канал")
+    subs_keyboard = InlineKeyboardMarkup(row_width=4)
+    for channel in channels:
+        btn = InlineKeyboardButton(channel, callback_data=f'channel:{channel}')
+        subs_keyboard.insert(btn)
+    await message.answer('Выберите канал для взаимодействия', reply_markup=subs_keyboard)

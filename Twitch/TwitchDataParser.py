@@ -45,11 +45,11 @@ async def get_stream_info_for_channel_if_streaming(channel_name):
                 return None
             except KeyError:
                 return None
-            return {'game_id': info["game_id"],
-                    'language': info["language"],
-                    'title': info["title"],
-                    'viewer_count': info["viewer_count"]
-                    }
+            return {'stream_id': info['id'],
+                    'channel_name': info['user_name'],
+                    'game_id': info['game_id'],
+                    'viewer_count': info['viewer_count'],
+                    'datetime_create': info['started_at']}
 
 
 async def caller():
