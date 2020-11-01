@@ -72,13 +72,15 @@ async def process_unsubscribe_command(message: types.Message):
 @dp.message_handler(commands=['mysubs'])
 @dp.message_handler(text=my_subs_button.text)
 async def process_mysub_list_command(message: types.Message):
-    channels = ['channel1', 'channel2']
-    if not channels:
+    channels_data = db.get_subscribed_channels(message.chat.id)
+    if not channels_data:
         await message.answer('Вы не были подписаны ни на один канал')
         return
 
     subs_keyboard = InlineKeyboardMarkup(row_width=4)
-    for channel in channels:
-        btn = InlineKeyboardButton(channel, callback_data=f'channel:{channel}')
+    for row in channels_data:
+        channel_name = row[0]
+        btn = InlineKeyboardButton(channel_name, callback_data=f'channel:{channel_name}')
         subs_keyboard.insert(btn)
+
     await message.answer('Выберите канал для взаимодействия', reply_markup=subs_keyboard)

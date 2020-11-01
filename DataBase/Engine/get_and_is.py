@@ -71,6 +71,18 @@ def get_tasks_from_channel_actions_deque(self):
                         """).fetchall()
 
 
+def get_subscribed_channels(self, chat_id):
+    res = self.cursor.execute("""
+                            SELECT tw_channel.name
+                            FROM ref_tg_tw 
+                                JOIN tg_chat on tg_chat.id = ref_tg_tw.tg_chat_id
+                                JOIN tw_channel on tw_channel.id = ref_tg_tw.tw_channel_id
+                            WHERE tg_chat.id = ?
+                        """, (chat_id,)).fetchall()
+    if res:
+        return res
+
+
 def is_tg_chat_has_sub_to_tw_channel(self, chat_id, channel_id):
     res = self.cursor.execute("""
                             SELECT ref_tg_tw.id
