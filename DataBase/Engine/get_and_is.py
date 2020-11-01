@@ -83,6 +83,24 @@ def get_subscribed_channels(self, chat_id):
         return res
 
 
+def view_msg_qty_for_channel(self, chat_id, channel_name):
+    channel_id = self.get_tw_channel_id_by_name(channel_name)
+
+    if not self.is_tg_chat_has_sub_to_tw_channel(chat_id, channel_id):
+        raise TgChatIsNotSubscribedToTwChannel
+
+    res = self.cursor.execute("""
+                    SELECT COUNT(*), substr(tw_chat.datetime_create, 1, 16)
+                    FROM tw_chat
+	                    INNER JOIN tw_stream on tw_chat.stream_id = tw_stream.id
+	                    INNER JOIN tw_channel on tw_stream.channel_id= tw_channel.id
+	                WHERE tw_channel.id = ?
+                    GROUP BY tw_channel.ID, substr(tw_chat.datetime_create, 1, 16)
+                    """, (channel_id,)).fetchall()
+    if res:
+        return res
+
+
 def is_tg_chat_has_sub_to_tw_channel(self, chat_id, channel_id):
     res = self.cursor.execute("""
                             SELECT ref_tg_tw.id

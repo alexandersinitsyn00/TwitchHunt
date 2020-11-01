@@ -1,3 +1,4 @@
+from os import environ
 from aiogram import types
 from aiogram.utils.markdown import text, bold
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ParseMode
@@ -8,6 +9,9 @@ from ..telegram import dp
 from ..keyboards_stickers import *
 
 from .. import states
+
+root_path = environ.get("ROOT_DIR")
+data_folder = environ.get("DATA_DIR")
 
 
 # START COMMAND

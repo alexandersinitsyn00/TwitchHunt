@@ -7,3 +7,4 @@ venv/
 Data/
 *.db.db-journal
 *.env
+*.png

@@ -31,6 +31,7 @@ class DbEngine(object):
     from .get_and_is import get_tasks_from_channel_actions_deque
     from .get_and_is import is_tg_chat_has_sub_to_tw_channel
     from .get_and_is import get_listening_channels
-    from.get_and_is import get_subscribed_channels
+    from .get_and_is import get_subscribed_channels
+    from .get_and_is import view_msg_qty_for_channel
 
     from .set import set_state_for_tg_chat
