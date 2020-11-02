@@ -1,0 +1,16 @@
+aiogram==2.10.1
+aiohttp==3.7.2
+async-timeout==3.0.1
+attrs==20.2.0
+Babel==2.8.0
+certifi==2020.6.20
+chardet==3.0.4
+idna==2.10
+multidict==5.0.0
+python-dotenv==0.15.0
+pytz==2020.1
+typing-extensions==3.7.4.3
+websockets==8.1
+yarl==1.6.2
+numpy~=1.19.3
+matplotlib~=3.3.2
