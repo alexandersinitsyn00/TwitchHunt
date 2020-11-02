@@ -60,18 +60,6 @@ async def process_subscribe_command(message: types.Message):
     await message.answer(resp_text, parse_mode=ParseMode.MARKDOWN)
 
 
-# UNSUBSCRIBE COMMAND
-@dp.message_handler(commands=['unsub'])
-@dp.message_handler(text=unsubscribe_button.text)
-async def process_unsubscribe_command(message: types.Message):
-    db.set_state_for_tg_chat(message.chat.id, states.UNSUBSCRIBING)
-    resp_text = text('Пожалуйста, введите',
-                     bold('имя канала'),
-                     'от которого вы хотите отписаться'
-                     )
-    await message.answer(resp_text, parse_mode=ParseMode.MARKDOWN)
-
-
 # MYSUB COMMAND
 @dp.message_handler(commands=['mysubs'])
 @dp.message_handler(text=my_subs_button.text)
