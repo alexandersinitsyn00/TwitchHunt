@@ -28,7 +28,7 @@ async def process_channel_callback(callback_query: types.CallbackQuery):
     channel = callback_query.data.replace('channel:', '')
     act_keyboard = InlineKeyboardMarkup(row_width=2)
     for act in actions:
-        btn = InlineKeyboardButton(act, callback_data=f'act:{act}_channel:{channel}')
+        btn = InlineKeyboardButton(act, callback_data=f'act:{act}?channel:{channel}')
         act_keyboard.insert(btn)
     await bot.send_message(callback_query.from_user.id,
                            f'Выберите опцию для канала {channel}',
@@ -42,7 +42,7 @@ async def process_action_callback(callback_query: types.CallbackQuery):
 
     chat_id = callback_query.message.chat.id
 
-    data = callback_query.data.replace('act:', '').replace('channel:', '').split('_')
+    data = callback_query.data.replace('act:', '').replace('channel:', '').split('?')
     act = data[0]
     channel = data[1]
     try:
