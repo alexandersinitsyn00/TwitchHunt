@@ -34,7 +34,7 @@ async def subscribing(chat_id, message):
     # Создать подписку
     try:
         db.add_tw_subscription(chat_id, channel_name)
-    except DbExceptions.TgChatIsNotSubscribedToTwChannel:
+    except DbExceptions.TgChatAlreadySubscribedToTwChannel:
         await message.answer(f'Вы уже подписаны на канал {message.text}')
         return
 
