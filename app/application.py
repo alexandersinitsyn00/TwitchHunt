@@ -1,14 +1,13 @@
+from pathlib import Path
 import asyncio
 from os import environ
 from os import path, curdir
 from dotenv import load_dotenv
 
-# Главный каталог
-ROOT_DIR = path.abspath(curdir)
+
 
 # Загрузить переменные виртуального окружения
-dotenv_path = f'{ROOT_DIR}\\app\\application.env'
-environ['ROOT_DIR'] = ROOT_DIR
+dotenv_path = Path.cwd() / 'app' / 'application.env'
 load_dotenv(dotenv_path)
 
 from Telegram import *
