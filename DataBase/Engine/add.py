@@ -21,9 +21,13 @@ def add_tw_stream_info(self, data):
     stream_id = data["stream_id"]
     viewers_count = data["viewer_count"]
 
+    utc_date_time = pytz.utc.localize(datetime.utcnow())
+    moscow_timezone = pytz.timezone('Europe/Moscow')
+    moscow_date_time_now = utc_date_time.astimezone(moscow_timezone)
+
     self.cursor.execute("""INSERT or IGNORE INTO tw_stream_history (stream_id, viewers_count, datetime_create)
                             VALUES (?, ?, ?)
-                        """, (stream_id, viewers_count, str(datetime.now())))
+                        """, (stream_id, viewers_count, str(moscow_date_time_now)))
     self.db.commit()
 
 
