@@ -1,8 +1,8 @@
 import asyncio
 import aiohttp
 import json
-
-# print(json.dumps(data, sort_keys=True, indent=4))
+import datetime
+import pytz
 
 AUTH_TOKEN_VALIDATE_BASE_URL = 'https://id.twitch.tv/oauth2/validate'
 STREAM_BASE_URL = 'https://api.twitch.tv/helix/streams'
@@ -45,17 +45,13 @@ async def get_stream_info_for_channel_if_streaming(channel_name):
                 return None
             except KeyError:
                 return None
+
+            utc_started_at = pytz.utc.localize(datetime.datetime.strptime(info['started_at'], '%Y-%m-%dT%H:%M:%SZ'))
+            moscow_timezone = pytz.timezone('Europe/Moscow')
+            moscow_started_at = utc_started_at.astimezone(moscow_timezone)
+
             return {'stream_id': info['id'],
                     'channel_name': info['user_name'],
                     'game_id': info['game_id'],
                     'viewer_count': info['viewer_count'],
-                    'datetime_create': info['started_at']}
-
-
-async def caller():
-    print(await is_valid_channel('nickmercs'))
-
-
-if __name__ == '__main__':
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(caller())
+                    'datetime_create': moscow_started_at}
