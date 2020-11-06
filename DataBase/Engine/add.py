@@ -1,6 +1,7 @@
 import sqlite3
 from datetime import datetime
 from .Exceptions import *
+import pytz
 
 
 def add_tw_stream(self, data):
@@ -75,9 +76,13 @@ def add_twitch_message(self, channel_name: str, tw_user_name: str, msg: str):
     stream_id = self.get_active_stream_id_for_channel(channel_id)
     user_id = self.get_tw_user_id_by_name(tw_user_name)
 
+    utc_date_time = pytz.utc.localize(datetime.utcnow())
+    moscow_timezone = pytz.timezone('Europe/Moscow')
+    moscow_date_time_now = utc_date_time.astimezone(moscow_timezone)
+
     self.cursor.execute("""INSERT INTO tw_chat (stream_id, user_id, msg, datetime_create)
                                 VALUES (?, ?, ?, ?)
-                       """, (stream_id, user_id, msg, str(datetime.now())))
+                       """, (stream_id, user_id, msg, str(moscow_date_time_now)))
 
 
 def __add_tasks_by_init__(self):
