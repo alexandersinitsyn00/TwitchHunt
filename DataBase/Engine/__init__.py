@@ -33,5 +33,6 @@ class DbEngine(object):
     from .get_and_is import get_listening_channels
     from .get_and_is import get_subscribed_channels
     from .get_and_is import view_msg_qty_for_channel
+    from .get_and_is import view_viewers_qty_for_channel
 
     from .set import set_state_for_tg_chat

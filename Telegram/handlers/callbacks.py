@@ -20,7 +20,8 @@ UNSUB = 'Отписаться'
 
 actions = [
     UNSUB,
-    VIEW_MSG_QTY
+    VIEW_MSG_QTY,
+    VIEW_VIWERS_COUNT_QTY
 ]
 
 
@@ -39,7 +40,6 @@ async def process_channel_callback(callback_query: types.CallbackQuery):
                            reply_markup=act_keyboard)
 
 
-# action for channel callback
 @dp.callback_query_handler(lambda query: query.data.startswith('act:'))
 async def process_action_callback(callback_query: types.CallbackQuery):
     await bot.answer_callback_query(callback_query.id)
@@ -51,6 +51,8 @@ async def process_action_callback(callback_query: types.CallbackQuery):
     channel = data[1]
     if act == VIEW_MSG_QTY:
         await create_send_qty_msg_graph(chat_id, channel)
+    elif act == VIEW_VIWERS_COUNT_QTY:
+        await create_send_viewers_msg_graph(chat_id, channel)
     elif act == UNSUB:
         await unsubscribing(chat_id, channel)
 
@@ -82,5 +84,22 @@ async def create_send_qty_msg_graph(chat_id, channel_name):
         else:
             await bot.send_message(chat_id,
                                    f'Нет данных по количеству сообщений для канала {channel_name}')
+    except DbExceptions.TgChatIsNotSubscribedToTwChannel:
+        await bot.send_message(chat_id, f'Вы уже не подписаны на канал {channel_name}')
+
+
+async def create_send_viewers_msg_graph(chat_id, channel_name):
+    try:
+        file_path = data_path / 'img' / f'{chat_id}{str(datetime.now()).replace(":", "_").replace(".", "_")}.png'
+        msg_qty_data = db.view_viewers_qty_for_channel(chat_id, channel_name)
+
+        if msg_qty_data:
+            save_datetime_graph("Анализ количества зрителей", VIEW_VIWERS_COUNT_QTY,
+                                file_path, msg_qty_data, channel_name)
+            await bot.send_photo(chat_id, types.InputFile(str(file_path)),
+                                 f' График количества зрителей для канала {channel_name}')
+        else:
+            await bot.send_message(chat_id,
+                                   f'Нет данных по количеству зрителей для канала {channel_name}')
     except DbExceptions.TgChatIsNotSubscribedToTwChannel:
         await bot.send_message(chat_id, f'Вы уже не подписаны на канал {channel_name}')
