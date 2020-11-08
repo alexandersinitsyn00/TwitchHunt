@@ -181,10 +181,7 @@ def view_most_active_user_for_channel(self, chat_id, channel_name, date=None):
                             ORDER by COUNT(*) DESC
                             LIMIT 10
                     """
-    print(query)
-    print(params)
     res = self.cursor.execute(query, params).fetchall()
-    print(res)
     if res:
         return res
 

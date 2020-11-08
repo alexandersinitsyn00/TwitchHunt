@@ -3,7 +3,8 @@ from pathlib import Path
 from datetime import datetime as dt
 from .. import states
 from aiogram import types
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ParseMode
+from aiogram.utils import markdown
 
 from ..telegram import dp
 from ..telegram import bot
@@ -148,12 +149,12 @@ async def send_most_active_users(chat_id, channel_name, date=None):
         most_active_users = db.view_most_active_user_for_channel(chat_id, channel_name, date)
 
         if most_active_users:
-            msg = f'Наиболее активные пользователи на канале {channel_name}🥰 за {"все время" if not date else date} :\n'
+            msg = f'ТОП 10 пользователей на канале {channel_name} за {"все время" if not date else date} :\n'
             counter = 1
             for row in most_active_users:
-                msg = msg + f'{counter:^4}: {row[0]:<30} {row[1]:>5} сообщений\n'
+                msg = msg + f'{counter:^2}: {row[0]:<20} {row[1]:>4} сообщений\n'
                 counter = counter + 1
-            await bot.send_message(chat_id, msg)
+            await bot.send_message(chat_id, markdown.hpre(msg), parse_mode=ParseMode.HTML)
         else:
             await bot.send_message(chat_id, f'На канале {channel_name} еще нет сообщений')
     except DbExceptions.TgChatIsNotSubscribedToTwChannel:
