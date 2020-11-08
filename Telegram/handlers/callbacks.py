@@ -16,6 +16,7 @@ data_path = Path.cwd() / environ.get("DATA_DIR")
 
 VIEW_MSG_QTY = 'Кол-во сообщений'
 VIEW_VIWERS_COUNT_QTY = 'Кол-во зрителей'
+VIEW_MOST_ACTIVE_USERS = 'ТОП зрителей'
 UNSUB = 'Отписаться'
 VIEW_STREAMS = 'Информация по дням'
 
@@ -23,7 +24,8 @@ actions = [
     UNSUB,
     VIEW_STREAMS,
     VIEW_MSG_QTY,
-    VIEW_VIWERS_COUNT_QTY
+    VIEW_VIWERS_COUNT_QTY,
+    VIEW_MOST_ACTIVE_USERS
 ]
 
 NON_STREAMS_ACTIONS = 2
@@ -73,13 +75,19 @@ async def process_action_callback(callback_query: types.CallbackQuery):
     channel = data[1]
     if act == VIEW_MSG_QTY:
         await create_send_qty_msg_graph(chat_id, channel)
+
     elif act == VIEW_VIWERS_COUNT_QTY:
         await create_send_viewers_msg_graph(chat_id, channel)
+
     elif act == UNSUB:
         await unsubscribing(chat_id, channel)
+
     elif act == VIEW_STREAMS:
         user_from = callback_query.from_user.id
         await show_streams(chat_id, channel, user_from)
+
+    elif act == VIEW_MOST_ACTIVE_USERS:
+        await send_most_active_users(chat_id, channel)
 
 
 @dp.callback_query_handler(lambda query: query.data.startswith('da:'))
@@ -97,6 +105,8 @@ async def process_action_callback(callback_query: types.CallbackQuery):
         await create_send_qty_msg_graph(chat_id, channel, date=date)
     elif act == VIEW_VIWERS_COUNT_QTY:
         await create_send_viewers_msg_graph(chat_id, channel, date=date)
+    elif act == VIEW_MOST_ACTIVE_USERS:
+        await send_most_active_users(chat_id, channel, date)
 
 
 async def unsubscribing(chat_id, channel_name):
@@ -129,6 +139,23 @@ async def create_send_qty_msg_graph(chat_id, channel_name, date=None):
         else:
             await bot.send_message(chat_id,
                                    f'Нет данных по количеству сообщений')
+    except DbExceptions.TgChatIsNotSubscribedToTwChannel:
+        await bot.send_message(chat_id, f'Вы уже не подписаны на канал {channel_name}')
+
+
+async def send_most_active_users(chat_id, channel_name, date=None):
+    try:
+        most_active_users = db.view_most_active_user_for_channel(chat_id, channel_name, date)
+
+        if most_active_users:
+            msg = f'Наиболее активные пользователи на канале {channel_name}🥰 за {"все время" if not date else date} :\n'
+            counter = 1
+            for row in most_active_users:
+                msg = msg + f'{counter:^4}: {row[0]:<30} {row[1]:>5} сообщений\n'
+                counter = counter + 1
+            await bot.send_message(chat_id, msg)
+        else:
+            await bot.send_message(chat_id, f'На канале {channel_name} еще нет сообщений')
     except DbExceptions.TgChatIsNotSubscribedToTwChannel:
         await bot.send_message(chat_id, f'Вы уже не подписаны на канал {channel_name}')
 

@@ -35,5 +35,6 @@ class DbEngine(object):
     from .get_and_is import view_msg_qty_for_channel
     from .get_and_is import view_viewers_qty_for_channel
     from .get_and_is import get_channell_stream_dates
+    from .get_and_is import view_most_active_user_for_channel
 
     from .set import set_state_for_tg_chat
