@@ -24,6 +24,24 @@ def get_tw_channel_id_by_name(self, channel_name: str):
     return channel_id
 
 
+def get_channell_stream_dates(self, chat_id, channel_name: str):
+    channel_id = self.get_tw_channel_id_by_name(channel_name)
+
+    if not self.is_tg_chat_has_sub_to_tw_channel(chat_id, channel_id):
+        raise TgChatIsNotSubscribedToTwChannel
+
+    channel_name = channel_name.lower()
+    res = self.cursor.execute("""
+                                    SELECT substr(tw_stream.datetime_begin, 1, 10)
+                                    FROM tw_stream
+                                        INNER JOIN tw_channel on tw_channel.id = tw_stream.channel_id
+                                    WHERE tw_channel.name = ?                                        
+                                    GROUP BY tw_channel.ID, substr(tw_stream.datetime_begin, 1, 10)
+                                """, (channel_name,)).fetchall()
+    if res:
+        return res
+
+
 def get_tw_user_id_by_name(self, user_name):
     try:
         user_id = self.cursor.execute("""
@@ -83,38 +101,56 @@ def get_subscribed_channels(self, chat_id):
         return res
 
 
-def view_msg_qty_for_channel(self, chat_id, channel_name):
+def view_msg_qty_for_channel(self, chat_id, channel_name, date=None):
     channel_id = self.get_tw_channel_id_by_name(channel_name)
 
     if not self.is_tg_chat_has_sub_to_tw_channel(chat_id, channel_id):
         raise TgChatIsNotSubscribedToTwChannel
 
-    res = self.cursor.execute("""
+    query = """
                     SELECT COUNT(*), substr(tw_chat.datetime_create, 1, 16)
                     FROM tw_chat
 	                    INNER JOIN tw_stream on tw_chat.stream_id = tw_stream.id
 	                    INNER JOIN tw_channel on tw_stream.channel_id= tw_channel.id
 	                WHERE tw_channel.id = ?
+            """
+    params = None
+    if date:
+        query = query + """ AND substr(tw_chat.datetime_create, 1, 10) = ?"""
+        params = (channel_id, date)
+    else:
+        params = (channel_id,)
+    query = query + """
                     GROUP BY tw_channel.ID, substr(tw_chat.datetime_create, 1, 16)
-                    """, (channel_id,)).fetchall()
+               """
+    res = self.cursor.execute(query, params).fetchall()
     if res:
         return res
 
 
-def view_viewers_qty_for_channel(self, chat_id, channel_name):
+def view_viewers_qty_for_channel(self, chat_id, channel_name, date=None):
     channel_id = self.get_tw_channel_id_by_name(channel_name)
 
     if not self.is_tg_chat_has_sub_to_tw_channel(chat_id, channel_id):
         raise TgChatIsNotSubscribedToTwChannel
 
-    res = self.cursor.execute("""
+    query = """
                     SELECT tw_stream_history.viewers_count, substr(tw_stream_history.datetime_create, 1, 16)
                     FROM tw_stream_history
 	                    INNER JOIN tw_stream on tw_stream_history.stream_id = tw_stream.id
 	                    INNER JOIN tw_channel on tw_stream.channel_id= tw_channel.id
-	                WHERE tw_channel.id = ?
+    	            WHERE tw_channel.id = ?
+                """
+    params = None
+    if date:
+        query = query + """ AND substr(tw_stream_history.datetime_create, 1, 10) = ?"""
+        params = (channel_id, date)
+    else:
+        params = (channel_id,)
+    query = query + """
                     GROUP BY tw_channel.ID, substr(tw_stream_history.datetime_create, 1, 16)
-                    """, (channel_id,)).fetchall()
+                   """
+    res = self.cursor.execute(query, params).fetchall()
     if res:
         return res
 
