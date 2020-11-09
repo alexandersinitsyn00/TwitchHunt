@@ -15,11 +15,17 @@ from GraphicBuilder.GraphicBuilder import *
 
 data_path = Path.cwd() / environ.get("DATA_DIR")
 
-VIEW_MSG_QTY = 'Кол-во сообщений'
-VIEW_VIWERS_COUNT_QTY = 'Кол-во зрителей'
-VIEW_MOST_ACTIVE_USERS = 'ТОП зрителей'
-UNSUB = 'Отписаться'
-VIEW_STREAMS = 'Информация по дням'
+# VIEW_MSG_QTY = 'Кол-во сообщений'
+# VIEW_VIWERS_COUNT_QTY = 'Кол-во зрителей'
+# VIEW_MOST_ACTIVE_USERS = 'ТОП зрителей'
+# UNSUB = 'Отписаться'
+# VIEW_STREAMS = 'Информация по дням'
+
+VIEW_MSG_QTY = ['ms', 'Кол-во сообщений']
+VIEW_VIWERS_COUNT_QTY = ['vw', 'Кол-во зрителей']
+VIEW_MOST_ACTIVE_USERS = ['ma', 'ТОП зрителей']
+UNSUB = ['us', 'Отписаться']
+VIEW_STREAMS = ['day', 'Информация по дням']
 
 actions = [
     UNSUB,
@@ -40,7 +46,7 @@ async def process_channel_callback(callback_query: types.CallbackQuery):
     channel = callback_query.data.replace('channel:', '')
     act_keyboard = InlineKeyboardMarkup(row_width=2)
     for act in actions:
-        btn = InlineKeyboardButton(act, callback_data=f'act:{act}*channel:{channel}')
+        btn = InlineKeyboardButton(act[1], callback_data=f'act:{act[0]}*channel:{channel}')
         act_keyboard.insert(btn)
     await bot.send_message(callback_query.from_user.id,
                            f'Выберите опцию для канала {channel}',
@@ -58,7 +64,7 @@ async def process_action_callback(callback_query: types.CallbackQuery):
 
     act_keyboard = InlineKeyboardMarkup(row_width=2)
     for act in actions[NON_STREAMS_ACTIONS:]:
-        btn = InlineKeyboardButton(act, callback_data=f'da:{act}*ch:{channel}*dt:{date}')
+        btn = InlineKeyboardButton(act[1], callback_data=f'da:{act[0]}*ch:{channel}*dt:{date}')
         act_keyboard.insert(btn)
     await bot.send_message(callback_query.from_user.id,
                            f'Выберите опцию. Канал: {channel}. Дата трансляции: {date}',
@@ -74,20 +80,20 @@ async def process_action_callback(callback_query: types.CallbackQuery):
     data = callback_query.data.replace('act:', '').replace('channel:', '').split('*')
     act = data[0]
     channel = data[1]
-    if act == VIEW_MSG_QTY:
+    if act == VIEW_MSG_QTY[0]:
         await create_send_qty_msg_graph(chat_id, channel)
 
-    elif act == VIEW_VIWERS_COUNT_QTY:
+    elif act == VIEW_VIWERS_COUNT_QTY[0]:
         await create_send_viewers_msg_graph(chat_id, channel)
 
-    elif act == UNSUB:
+    elif act == UNSUB[0]:
         await unsubscribing(chat_id, channel)
 
-    elif act == VIEW_STREAMS:
+    elif act == VIEW_STREAMS[0]:
         user_from = callback_query.from_user.id
         await show_streams(chat_id, channel, user_from)
 
-    elif act == VIEW_MOST_ACTIVE_USERS:
+    elif act == VIEW_MOST_ACTIVE_USERS[0]:
         await send_most_active_users(chat_id, channel)
 
 
@@ -102,11 +108,11 @@ async def process_action_callback(callback_query: types.CallbackQuery):
     channel = data[1]
     date = data[2]
 
-    if act == VIEW_MSG_QTY:
+    if act == VIEW_MSG_QTY[0]:
         await create_send_qty_msg_graph(chat_id, channel, date=date)
-    elif act == VIEW_VIWERS_COUNT_QTY:
+    elif act == VIEW_VIWERS_COUNT_QTY[0]:
         await create_send_viewers_msg_graph(chat_id, channel, date=date)
-    elif act == VIEW_MOST_ACTIVE_USERS:
+    elif act == VIEW_MOST_ACTIVE_USERS[0]:
         await send_most_active_users(chat_id, channel, date)
 
 
@@ -191,12 +197,18 @@ async def create_send_graph(msg, graph_name, y_label, file_path, data, channel_n
 async def show_streams(chat_id, channel, user_from):
     try:
         streams_keyboard = InlineKeyboardMarkup(row_width=4)
-        for row in db.get_channell_stream_dates(chat_id, channel):
-            btn = InlineKeyboardButton(row[0], callback_data=f'date:{row[0]}*channel:{channel}')
-            streams_keyboard.insert(btn)
-        await bot.send_message(user_from,
-                               f'Выберите дату для получения информации по каналу {channel}',
-                               reply_markup=streams_keyboard)
+        streams = db.get_channell_stream_dates(chat_id, channel)
+        if streams:
+            for row in streams:
+                btn = InlineKeyboardButton(row[0], callback_data=f'date:{row[0]}*channel:{channel}')
+                streams_keyboard.insert(btn)
+            await bot.send_message(user_from,
+                                   f'Выберите дату для получения информации по каналу {channel}',
+                                   reply_markup=streams_keyboard)
+        else:
+            await bot.send_message(user_from,
+                                   f'Нет данных для канала {channel}')
+
     except DbExceptions.TgChatIsNotSubscribedToTwChannel:
         await bot.send_message(user_from,
                                f'Вы уже не подписаны на канал {channel}')
